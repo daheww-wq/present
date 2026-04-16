@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 액션 플랜</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff;
+  --text-1: #37352f;
+  --text-2: #787674;
+  --text-3: #b0aca8;
+  --hover: rgba(55,53,47,0.06);
+  --border: rgba(55,53,47,0.09);
+
+  --purple: #6e62c2; --purple-bg: #f0effe; --purple-light: #ede9fe;
+  --teal:   #0a7455; --teal-bg:   #e9f8f1; --teal-light:   #dcfce7;
+  --amber:  #a05b1a; --amber-bg:  #fef3e2; --amber-light:  #fef9c3;
+  --blue:   #1a5fa0; --blue-bg:   #eaf1fb;
+  --red:    #be3535; --red-bg:    #fdecea;
+  --gray:   #6b6b6b; --gray-bg:   #f1f1ef;
+  --green:  #2d6a1f; --green-bg:  #e9f5e1;
+  --pink:   #8b2252; --pink-bg:   #fce8f3;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #191919;
+    --text-1: #e3e0d8; --text-2: #9a9589; --text-3: #5a5650;
+    --hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.08);
+    --purple: #a89ee8; --purple-bg: #2b2642; --purple-light: #2b2642;
+    --teal:   #5ab898; --teal-bg:   #0e2d22; --teal-light:   #0e2d22;
+    --amber:  #e0a050; --amber-bg:  #2e1e06; --amber-light:  #2e1e06;
+    --blue:   #6aa4d8; --blue-bg:   #0d2236;
+    --red:    #e07070; --red-bg:    #300e0e;
+    --gray:   #a0a0a0; --gray-bg:   #272724;
+    --green:  #80c860; --green-bg:  #0f2208;
+    --pink:   #d080a8; --pink-bg:   #2a0c1e;
+  }
+}
+
+body {
+  font-family: 'Noto Sans KR', ui-sans-serif, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 4rem 3rem 6rem;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* ── PAGE TITLE ── */
+.page-icon { font-size: 52px; margin-bottom: 12px; display: block; }
+.page-title {
+  font-size: 32px; font-weight: 700;
+  color: var(--text-1); margin-bottom: 4px; letter-spacing: -0.3px;
+}
+.page-desc { font-size: 14px; color: var(--text-2); margin-bottom: 2.5rem; }
+
+/* ── DIVIDER ── */
+hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+/* ── CALLOUT ── */
+.callout {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--gray-bg); border-radius: 6px;
+  padding: 12px 14px; margin: 0.5rem 0 1.2rem;
+  font-size: 14px; color: var(--text-1); line-height: 1.6;
+}
+.callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.callout.purple { background: var(--purple-light); }
+.callout.teal   { background: var(--teal-light); }
+.callout.amber  { background: var(--amber-light); }
+
+/* ── TOGGLE ── */
+.toggle { margin: 2px 0; }
+.toggle-trigger {
+  display: flex; align-items: flex-start; gap: 4px;
+  padding: 3px 4px; border-radius: 4px;
+  cursor: pointer; user-select: none;
+  width: 100%;
+  background: none; border: none; text-align: left;
+  font-family: inherit; font-size: inherit; color: inherit;
+  line-height: 1.65;
+}
+.toggle-trigger:hover { background: var(--hover); }
+.toggle-arrow {
+  width: 20px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--text-3); font-size: 11px;
+  transition: transform 0.18s ease; margin-top: 1px;
+}
+.toggle.open .toggle-arrow { transform: rotate(90deg); }
+.toggle-label { flex: 1; }
+.toggle-content {
+  display: none;
+  padding-left: 24px;
+  margin-top: 1px;
+}
+.toggle.open .toggle-content { display: block; }
+
+/* ── H STYLES ── */
+.h1 { font-size: 20px; font-weight: 700; color: var(--text-1); margin: 1.6rem 0 0.5rem; }
+.h2 { font-size: 16px; font-weight: 600; color: var(--text-1); margin: 1.2rem 0 0.4rem; }
+.h3 { font-size: 14px; font-weight: 600; color: var(--text-2); margin: 0.8rem 0 0.3rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* ── BULLET ── */
+.bullets { margin: 2px 0; }
+.bullet {
+  display: flex; gap: 8px; align-items: flex-start;
+  font-size: 14.5px; color: var(--text-1);
+  padding: 2px 4px; border-radius: 4px;
+  line-height: 1.6;
+}
+.bullet:hover { background: var(--hover); }
+.bullet-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--text-3); margin-top: 8px; flex-shrink: 0;
+}
+.bullet-sq {
+  width: 14px; font-size: 13px; color: var(--text-3);
+  margin-top: 2px; flex-shrink: 0; text-align: center;
+}
+
+/* ── CHIP/TAG ── */
+.tag {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 500; padding: 1px 8px;
+  border-radius: 20px; white-space: nowrap;
+  vertical-align: middle; margin-left: 6px; line-height: 1.6;
+}
+.tag-red    { background: var(--red-bg);    color: var(--red); }
+.tag-amber  { background: var(--amber-bg);  color: var(--amber); }
+.tag-purple { background: var(--purple-bg); color: var(--purple); }
+.tag-green  { background: var(--green-bg);  color: var(--green); }
+.tag-gray   { background: var(--gray-bg);   color: var(--gray); }
+.tag-teal   { background: var(--teal-bg);   color: var(--teal); }
+.tag-blue   { background: var(--blue-bg);   color: var(--blue); }
+
+/* ── PROPERTY ROW ── */
+.prop-list { margin: 0.3rem 0 1rem; }
+.prop {
+  display: flex; gap: 0; align-items: baseline;
+  font-size: 14px; padding: 3px 4px;
+  border-radius: 4px; color: var(--text-1);
+}
+.prop:hover { background: var(--hover); }
+.prop-key { min-width: 120px; color: var(--text-2); font-size: 13.5px; }
+.prop-val { flex: 1; }
+
+/* ── SIMPLE TABLE ── */
+.ntable { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 0.5rem 0 1rem; }
+.ntable th {
+  text-align: left; padding: 6px 12px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--text-2); border-bottom: 1px solid var(--border);
+  background: var(--gray-bg);
+}
+.ntable td { padding: 7px 12px; border-bottom: 1px solid var(--border); color: var(--text-1); vertical-align: top; }
+.ntable tr:last-child td { border-bottom: none; }
+.ntable tr:hover td { background: var(--hover); }
+.strike { text-decoration: line-through; color: var(--red); }
+.good   { color: var(--teal); font-weight: 500; }
+
+/* ── BOARD (Q2/Q3 side-by-side) ── */
+.board { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0.5rem 0 0.8rem; }
+.board-col { background: var(--gray-bg); border-radius: 8px; padding: 12px 14px; }
+.board-head {
+  font-size: 12px; font-weight: 600; color: var(--text-2);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.board-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.bd-purple { background: var(--purple); }
+.bd-teal   { background: var(--teal); }
+.bitem {
+  display: flex; gap: 7px; align-items: flex-start;
+  font-size: 13px; color: var(--text-1);
+  padding: 3px 0; border-bottom: 1px solid var(--border); line-height: 1.5;
+}
+.bitem:last-child { border-bottom: none; }
+.bitem-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text-3); margin-top: 7px; flex-shrink: 0; }
+
+/* ── PHASE CARDS ── */
+.phase-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 0.5rem 0 0.8rem; }
+.phase-card { background: var(--gray-bg); border-radius: 8px; padding: 11px 13px; }
+.phase-badge { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 20px; display: inline-block; margin-bottom: 5px; }
+.phase-name { font-size: 13px; font-weight: 600; color: var(--text-1); margin-bottom: 2px; }
+.phase-period { font-size: 11px; color: var(--text-2); margin-bottom: 8px; }
+.pitem { font-size: 12.5px; color: var(--text-1); padding: 2px 0; border-bottom: 1px solid var(--border); display: flex; gap: 6px; line-height: 1.5; }
+.pitem:last-child { border-bottom: none; }
+
+/* ── POSITIONING ── */
+.pos-box { background: var(--purple-light); border-radius: 8px; padding: 16px 18px; margin: 0.5rem 0; }
+.pos-main { font-size: 17px; font-weight: 700; color: var(--purple); margin-bottom: 10px; }
+.pos-props { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.pos-item-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--purple); opacity: 0.7; margin-bottom: 3px; }
+.pos-item-val { font-size: 13px; color: var(--text-1); line-height: 1.4; }
+
+@media (max-width: 580px) {
+  body { padding: 2rem 1.2rem 4rem; }
+  .board, .phase-row, .pos-props { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<span class="page-icon">📋</span>
+<p class="page-title">2026 액션 플랜</p>
+<p class="page-desc">이직 1순위 · 자기계발 2순위 · 재정 3순위 · Q2~Q3</p>
+
+<hr>
+
+<!-- ══ 연간 목표 ══ -->
+<div class="h1">연간 목표</div>
+<div class="prop-list">
+  <div class="prop"><span class="prop-key">🎯 1순위</span><span class="prop-val"><strong>이직 완료</strong> — AI 서비스 기획 / AI PM 포지션 확정 → Q3 입사</span></div>
+  <div class="prop"><span class="prop-key">📚 2순위</span><span class="prop-val"><strong>자기계발</strong> — 이직 경쟁력 강화 + 루틴 습관 구축</span></div>
+  <div class="prop"><span class="prop-key">💰 3순위</span><span class="prop-val"><strong>재정 기반 구축</strong> — 지출 파악 → 적금 가입 → 이직 후 재조정</span></div>
+</div>
+
+<hr>
+
+<!-- ══ TRACK 1: 이직 ══ -->
+<div class="h1">🔵 이직 트랙</div>
+<div class="callout purple">
+  <span class="callout-icon">💡</span>
+  <span>포지셔닝: <strong>"AI 서비스의 품질까지 직접 챙기는 기획자"</strong> — PE · 품질 경험을 차별점으로 활용</span>
+</div>
+
+<div class="h2">분기별 플랜</div>
+<div class="board">
+  <div class="board-col">
+    <div class="board-head"><span class="board-dot bd-purple"></span>Q2 (4~6월) — 준비 & 집중 지원</div>
+    <div class="bitem"><div class="bitem-dot"></div><span>AI PM / AI 서비스 기획 JD 10개+ 수집 & 분류 <span class="tag tag-red">4월 말</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>사람인 · 잡코리아 이력서 업데이트 <span class="tag tag-red">4월 말</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>리멤버 프로필 정비 — 포지셔닝 문구 박기 <span class="tag tag-red">4월 말</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>헤드헌터 1~2곳 컨택 & 관심 포지션 공유 <span class="tag tag-amber">5월 초</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>자소서 베이스 문서 완성 <span class="tag tag-amber">5월 초</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>Notion 포폴 초안 완성 <span class="tag tag-amber">5월 중</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>서류 지원 집중 실행 — 주 2~3개 <span class="tag tag-green">5~6월</span></span></div>
+  </div>
+  <div class="board-col">
+    <div class="board-head"><span class="board-dot bd-teal"></span>Q3 (7~9월) — 면접 & 오퍼</div>
+    <div class="bitem"><div class="bitem-dot"></div><span>면접 복기 — 매 면접 후 24시간 내 메모 <span class="tag tag-purple">필수</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>기술 질문 대비 (RAG · 루브릭 · 레드티밍 30초 설명)</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>헤드헌터 진행 건 주 1회 상태 확인</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>리멤버 인바운드 제안 모니터링 <span class="tag tag-green">ongoing</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>희망 연봉 · 조건 사전 정리 (최저선 / 이상선)</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>Q3 입사 완료 목표</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>8월 말까지 오퍼 없으면 타깃 범위 재검토 <span class="tag tag-gray">플랜B</span></span></div>
+  </div>
+</div>
+
+<!-- 면접 준비 toggle -->
+<div class="toggle open">
+  <button class="toggle-trigger" onclick="this.parentElement.classList.toggle('open')">
+    <span class="toggle-arrow">▶</span>
+    <span class="toggle-label"><span class="h2" style="margin:0;display:inline;">면접 준비</span></span>
+  </button>
+  <div class="toggle-content">
+
+    <div class="h3">단계별 플랜</div>
+    <div class="phase-row">
+      <div class="phase-card">
+        <span class="phase-badge tag-teal">Phase 1</span>
+        <div class="phase-name">글로 잡기</div>
+        <div class="phase-period">4월 말 ~ 5월 중 · 15~20분/일</div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>질문 1개 → PREP 구조로 답변 글쓰기</span></div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>치환표 옆에 두고 부정어 교체 훈련</span></div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>당황한 질문 → 지금 답변 만들어두기</span></div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>어제 쓴 답변 재검토 & 수정</span></div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-badge tag-purple">Phase 2</span>
+        <div class="phase-name">입으로 꺼내기</div>
+        <div class="phase-period">5월 중 ~ 6월 · 20~30분/일</div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>소리 내서 말하기 (타이머 2분 제한)</span></div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>녹음 → 부정어 / 끝맺음 / 결론 위치 체크</span></div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>"잠시 정리하고…" 반사화 훈련</span></div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>주 1회 Claude 랜덤 질문 즉흥 답변</span></div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-badge tag-amber">Phase 3</span>
+        <div class="phase-name">실전 시뮬</div>
+        <div class="phase-period">면접 2주 전 ~ 당일</div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>예상 질문 20개 즉흥 답변 (돌발 포함)</span></div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>의도적으로 망치고 → 다음 질문 리셋</span></div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>전날: 치환표 + 자기소개 1분 1회만</span></div>
+        <div class="pitem"><div class="bitem-dot" style="margin-top:7px"></div><span>전날: 지원 회사 최신 뉴스 훑기</span></div>
+      </div>
+    </div>
+
+    <!-- 약점 toggle -->
+    <div class="toggle open">
+      <button class="toggle-trigger" onclick="this.parentElement.classList.toggle('open')">
+        <span class="toggle-arrow">▶</span>
+        <span class="toggle-label"><span class="h3" style="margin:0;display:inline;">약점 & 처방</span></span>
+      </button>
+      <div class="toggle-content">
+        <div class="bullets">
+          <div class="bullet"><span class="bullet-sq">1</span><span><strong>두서가 너무 김</strong> — 배경 설명이 길어져 결론을 상대방이 정리해줌<br><span style="font-size:13px;color:var(--teal)">처방: PREP 강제화 — 첫 문장이 결론인지 체크</span></span></div>
+          <div class="bullet"><span class="bullet-sq">2</span><span><strong>예상 외 질문에 연쇄 무너짐</strong> — 한 질문 당황 → 이후 전체가 흔들림<br><span style="font-size:13px;color:var(--teal)">처방: "잠시 정리하고…" 반사화 + 질문마다 독립 리셋</span></span></div>
+          <div class="bullet"><span class="bullet-sq">3</span><span><strong>부정어 무의식 사용</strong> — "짧은 시간에", "아쉬웠다" 등<br><span style="font-size:13px;color:var(--teal)">처방: 치환표 암기 & 답변 작성 시 매번 적용</span></span></div>
+          <div class="bullet"><span class="bullet-sq">4</span><span><strong>임기응변 부족</strong> — 준비 안 된 질문 유형에 대응 공식 없음<br><span style="font-size:13px;color:var(--teal)">처방: 경험형·의견형·기술형·상황형 유형별 템플릿 준비</span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 치환표 toggle -->
+    <div class="toggle">
+      <button class="toggle-trigger" onclick="this.parentElement.classList.toggle('open')">
+        <span class="toggle-arrow">▶</span>
+        <span class="toggle-label"><span class="h3" style="margin:0;display:inline;">부정어 치환표</span></span>
+      </button>
+      <div class="toggle-content">
+        <table class="ntable">
+          <tr><th>❌ 쓰지 말 것</th><th>✅ 대신 이렇게</th></tr>
+          <tr><td class="strike">짧은 시간에 했다</td><td class="good">한정된 리소스 안에서 우선순위를 잡아 진행했습니다</td></tr>
+          <tr><td class="strike">아쉬웠다</td><td class="good">더 발전시킬 여지를 확인한 경험이었습니다</td></tr>
+          <tr><td class="strike">잘 모르겠다</td><td class="good">추가 검토가 필요한 부분입니다</td></tr>
+          <tr><td class="strike">실패했다</td><td class="good">예상과 다른 결과를 얻어 방향을 전환했습니다</td></tr>
+          <tr><td class="strike">경험이 없어서</td><td class="good">직접 담당한 건 아니지만, 인접 업무로 접했고…</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr>
+
+<!-- ══ TRACK 2: 자기계발 ══ -->
+<div class="h1">🟡 자기계발 트랙</div>
+
+<div class="h2">분기별 플랜</div>
+<div class="board">
+  <div class="board-col">
+    <div class="board-head"><span class="board-dot bd-purple"></span>Q2 (4~6월) — 세팅 & 실행</div>
+    <div class="bitem"><div class="bitem-dot"></div><span>루브릭 평가 프롬프트 설계 파트 서술 완료 <span class="tag tag-red">4월 말</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>Notion 포폴 랜딩 + 아카이빙 구조 세팅 <span class="tag tag-amber">5월 초</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>3~4개 핵심 프로젝트 카드 초안 완성</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>전 직장 PPT → 수치·성과 Notion 카드 통합</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>Feedly 소스 세팅 → LLM 업데이트 루틴 시작 <span class="tag tag-amber">4월 말</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>주요 업데이트 Notion 한 줄 메모 습관화 <span class="tag tag-green">ongoing</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>정처기 필기 원서접수 <span class="tag tag-red">4/20~23</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>정처기 필기 시험 <span class="tag tag-amber">5/9~29</span></span></div>
+  </div>
+  <div class="board-col">
+    <div class="board-head"><span class="board-dot bd-teal"></span>Q3 (7~9월) — 고도화 & 수확</div>
+    <div class="bitem"><div class="bitem-dot"></div><span>면접 피드백 반영 → 포폴 v2 정제</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>새 직장 프로젝트 기록 루틴 세팅</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>LLM 스크래핑 루틴 안정화 확인</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>Python + Notion API 자동화 검토 <span class="tag tag-gray">optional</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>정처기 실기 집중 학습 4~5주 <span class="tag tag-amber">6~7월</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>정처기 실기 시험 <span class="tag tag-amber">7/18~8/5</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>정처기 합격 발표 <span class="tag tag-amber">9/4~11</span></span></div>
+  </div>
+</div>
+
+<!-- 정처기 상세 toggle -->
+<div class="toggle">
+  <button class="toggle-trigger" onclick="this.parentElement.classList.toggle('open')">
+    <span class="toggle-arrow">▶</span>
+    <span class="toggle-label"><span class="h2" style="margin:0;display:inline;">정보처리기사 2회차 일정</span></span>
+  </button>
+  <div class="toggle-content">
+    <div class="callout amber">
+      <span class="callout-icon">⚠️</span>
+      <span>필기 원서접수 <strong>4월 20일(월) ~ 23일(목)</strong> — 이번 주 월요일. 응시 여부 바로 결정 필요!</span>
+    </div>
+    <table class="ntable">
+      <tr><th>구분</th><th>일정</th><th>비고</th></tr>
+      <tr><td>필기 원서접수</td><td><span class="tag tag-red">4/20 ~ 4/23</span></td><td>큐넷 인터넷 접수</td></tr>
+      <tr><td>필기 시험</td><td>5/9 ~ 5/29</td><td>CBT 방식</td></tr>
+      <tr><td>필기 합격 발표</td><td>6월 10일</td><td></td></tr>
+      <tr><td>실기 원서접수</td><td>6/22 ~ 6/25</td><td></td></tr>
+      <tr><td>실기 시험</td><td>7/18 ~ 8/5</td><td>필답형</td></tr>
+      <tr><td>최종 합격 발표</td><td>9/4 ~ 9/11</td><td></td></tr>
+    </table>
+    <div class="bullets">
+      <div class="bullet"><div class="bullet-dot"></div><span>필기 학습 기간: 접수 후 약 3주</span></div>
+      <div class="bullet"><div class="bullet-dot"></div><span>실기 학습 기간: 6~7월 집중 4~5주</span></div>
+      <div class="bullet"><div class="bullet-dot"></div><span>5월 필기 = 면접 준비 시기와 겹침 → 이직 강도 보고 결정</span></div>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ══ TRACK 3: 재정 ══ -->
+<div class="h1">🟢 재정 트랙</div>
+
+<div class="h2">분기별 플랜</div>
+<div class="board">
+  <div class="board-col">
+    <div class="board-head"><span class="board-dot bd-purple"></span>Q2 (4~6월) — 기반 잡기</div>
+    <div class="bitem"><div class="bitem-dot"></div><span>고정지출 항목 정리 (은행 앱 3개월치) <span class="tag tag-red">이번 주</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>변동지출 3개월 평균 계산</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>여유금액 계산 → 월 저축 목표액 확정 <span class="tag tag-purple">핵심</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>은행별 적금 금리 비교 <span class="tag tag-amber">5월 초</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>적금 상품 가입 + 자동이체 설정 <span class="tag tag-amber">5월 중</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>1달 납입 확인 & 무리 여부 점검</span></div>
+  </div>
+  <div class="board-col">
+    <div class="board-head"><span class="board-dot bd-teal"></span>Q3 (7~9월) — 이직 후 재조정</div>
+    <div class="bitem"><div class="bitem-dot"></div><span>퇴사 전 비상금 확보 (최소 3개월치) <span class="tag tag-purple">필수</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>공백 기간 있으면 적금 일시정지 or 감액</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>입사 후 새 연봉 기준 저축 가능액 재계산</span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>연봉 올랐으면 적금 증액 검토 <span class="tag tag-gray">여유 있으면</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>연말정산 절세 상품 탐색 (IRP · 연금저축) <span class="tag tag-gray">optional</span></span></div>
+    <div class="bitem"><div class="bitem-dot"></div><span>Q2~Q3 실제 저축액 vs 목표 결산</span></div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ══ 커리어 포지셔닝 ══ -->
+<div class="h1">🧭 커리어 포지셔닝</div>
+<div class="pos-box">
+  <div class="pos-main">"AI 서비스의 품질까지 직접 챙기는 기획자"</div>
+  <div class="pos-props">
+    <div>
+      <div class="pos-item-label">단기</div>
+      <div class="pos-item-val">AI PM / AI 서비스 기획 포지션 이직</div>
+    </div>
+    <div>
+      <div class="pos-item-label">중기</div>
+      <div class="pos-item-val">A/B테스트 · 퍼널 · 그로스 경험 쌓기</div>
+    </div>
+    <div>
+      <div class="pos-item-label">추구미</div>
+      <div class="pos-item-val">서비스 기획 / PO</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
