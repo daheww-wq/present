@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아제로스 레전드 - 브라우저 RPG</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 캐릭터 생성 -->
+<section id="screen-create" class="screen open">
+  <h1>⚔️ 아제로스 레전드</h1>
+  <p class="muted">다섯 지역, 다섯 우두머리, 여섯 직업. 당신의 전설을 시작하세요.</p>
+  <button id="btn-load" class="primary" style="display:none;margin-bottom:16px"></button>
+  <h4>이름</h4>
+  <input id="inp-name" maxlength="12" placeholder="캐릭터 이름을 입력하세요">
+  <h4>종족</h4>
+  <div id="race-list" class="cards"></div>
+  <h4>직업</h4>
+  <div id="class-list" class="cards"></div>
+  <div class="create-actions"><button id="btn-create" class="primary">🎮 모험 시작</button></div>
+</section>
+
+<!-- 게임 -->
+<section id="screen-game" class="screen">
+  <div class="topbar"><div id="hud-name"></div><div id="hud-zone"></div><div id="hud-gold"></div></div>
+  <div class="bars">
+    <div id="bar-hp" class="bar"><div class="fill"></div><div class="txt"></div></div>
+    <div id="bar-res" class="bar"><div class="fill"></div><div class="txt"></div></div>
+    <div id="bar-xp" class="bar"><div class="fill"></div><div class="txt"></div></div>
+  </div>
+  <div class="layout">
+    <canvas id="canvas" width="768" height="512"></canvas>
+    <div class="right">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="char">캐릭터</button>
+        <button class="tab-btn" data-tab="bag">가방</button>
+        <button class="tab-btn" data-tab="quest">퀘스트</button>
+        <button class="tab-btn" data-tab="skill">기술</button>
+        <button class="tab-btn" data-tab="talent" id="tab-btn-talent">특성</button>
+      </div>
+      <div id="panel"></div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div>
+      <div id="log"></div>
+      <div class="help">⌨️ 이동: 방향키/WASD · 탭: C 캐릭터, I 가방, L 퀘스트, K 기술, N 특성 · 전투: 1~6 기술, Space 기본 공격</div>
+    </div>
+    <div class="dpad">
+      <button class="e"></button><button data-move="0,-1">▲</button><button class="e"></button>
+      <button data-move="-1,0">◀</button><button class="e"></button><button data-move="1,0">▶</button>
+      <button class="e"></button><button data-move="0,1">▼</button><button class="e"></button>
+    </div>
+  </div>
+</section>
+
+<!-- 대화 모달 -->
+<div id="dialog" class="modal"><div class="box"><h3 id="dialog-title"></h3><div id="dialog-body"></div><div id="dialog-buttons"></div></div></div>
+
+<!-- 전투 모달 -->
+<div id="combat" class="modal"><div class="box">
+  <div class="c-side"><div id="c-enemy" style="display:flex;gap:12px;align-items:center;flex:1"></div></div>
+  <div id="c-ehp" class="bar"><div class="fill"></div><div class="txt"></div></div>
+  <div class="vs">⚔️ VS ⚔️</div>
+  <div class="c-side"><div id="c-player" style="display:flex;gap:12px;align-items:center;flex:1"></div></div>
+  <div id="c-php" class="bar" style="margin-bottom:4px"><div class="fill"></div><div class="txt"></div></div>
+  <div id="c-pres" class="bar"><div class="fill"></div><div class="txt"></div></div>
+  <div id="c-actions"></div>
+  <div id="clog"></div>
+</div></div>
+
+<script src="js/data.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
