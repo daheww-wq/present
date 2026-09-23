@@ -122,9 +122,9 @@ function renderHUD() {
   $('#tab-btn-talent').textContent = '특성' + (S.talentPts > 0 ? ` (${S.talentPts})` : '');
   renderPanel(); buildActionBar();
 }
-function setTab(t) { uiTab = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === t)); renderPanel(); }
+function setTab(t) { uiTab = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === t)); $('#panel').style.display = t === 'companion' ? 'none' : ''; $('#companion-panel').style.display = t === 'companion' ? '' : 'none'; renderPanel(); if (t === 'companion') setTimeout(() => $('#co-input').focus(), 0); }
 function renderPanel() {
-  const p = $('#panel');
+  const p = $('#panel'); if (uiTab === 'companion') return;
   if (uiTab === 'char') { p.innerHTML = renderChar(); drawPreview($('#preview')); }
   else if (uiTab === 'bag') p.innerHTML = renderBag(); else if (uiTab === 'quest') p.innerHTML = renderQuests();
   else if (uiTab === 'talent') p.innerHTML = renderTalents(); else if (uiTab === 'skill') p.innerHTML = renderSkills();
@@ -228,7 +228,7 @@ function acceptQuest(q) { S.quests[q.id] = { status: 'active', progress: q.type 
 function completeQuest(q) {
   S.quests[q.id].status = 'done'; if (q.type === 'collect') S.questItems[q.target] = Math.max(0, (S.questItems[q.target] || 0) - q.count);
   const it = genItem(Math.max(S.level, DATA.zones[W.zone].minLvl) + 1, q.reward.slot, q.reward.rarity); S.gold += q.gold; addItem(it);
-  log(`✅ 퀘스트 완료: <b>${q.name}</b> — +${q.xp} XP, +${q.gold}골드, ${itemHtml(it, true)}`, 'good'); gainXp(q.xp); renderHUD();
+  log(`✅ 퀘스트 완료: <b>${q.name}</b> — +${q.xp} XP, +${q.gold}골드, ${itemHtml(it, true)}`, 'good'); companionEvent('quest_done', q.name); gainXp(q.xp); renderHUD();
 }
 function openVendor() {
   const z = DATA.zones[W.zone];
@@ -255,6 +255,7 @@ function gainXp(n) {
     if (S.level >= 10) S.talentPts++; log(`🎉 <b>레벨 업! 레벨 ${S.level}</b>`, 'lvl'); floatText(S.px, S.py - 90, `LEVEL UP! ${S.level}`, '#ffd100', 2.2); burst(S.px, S.py - 30, '#ffd100', 24);
     DATA.classes[S.cls].abilities.filter(a => a.lvl === S.level).forEach(a => log(`✨ 새 기술 습득: <b>${a.name}</b> — ${a.desc}`, 'lvl'));
     if (S.level === 10) log('🌟 특성 시스템이 열렸습니다! 특성 탭에서 포인트를 투자하세요.', 'lvl');
+    companionEvent('levelup', `레벨 ${S.level}`);
   }
   if (S.level >= DATA.maxLevel) S.xp = 0;
 }
@@ -322,9 +323,9 @@ function damagePlayer(raw, src, label) {
 }
 function die(src) {
   S.hp = 0; S.stats.deaths++; const lost = Math.floor(S.gold * 0.1); S.gold -= lost; dead = 2.5; keys = {};
-  log(`💀 ${src ? src.def.name + '에게 ' : ''}쓰러졌습니다. 영혼 치유사가 마을에서 되살립니다. (골드 -${lost})`, 'bad');
+  log(`💀 ${src ? src.def.name + '에게 ' : ''}쓰러졌습니다. 영혼 치유사가 마을에서 되살립니다. (골드 -${lost})`, 'bad'); companionEvent('death');
 }
-function respawn() { const st = getStats(); S.hp = Math.floor(st.maxHp * 0.6); S.res = DATA.classes[S.cls].resource === 'rage' ? 0 : Math.floor(st.maxRes * 0.6); S.px = W.town.x; S.py = W.town.y; P.dots = []; P.stunT = 0; dead = null; W.monsters.forEach(m => { if (!m.boss) m.state = 'idle'; else { m.state = 'idle'; m.x = m.hx; m.y = m.hy; m.hp = m.maxHp; } }); renderHUD(); }
+function respawn() { CO.x = W.town.x - 40; CO.y = W.town.y; const st = getStats(); S.hp = Math.floor(st.maxHp * 0.6); S.res = DATA.classes[S.cls].resource === 'rage' ? 0 : Math.floor(st.maxRes * 0.6); S.px = W.town.x; S.py = W.town.y; P.dots = []; P.stunT = 0; dead = null; W.monsters.forEach(m => { if (!m.boss) m.state = 'idle'; else { m.state = 'idle'; m.x = m.hx; m.y = m.hy; m.hp = m.maxHp; } }); renderHUD(); }
 function killMonster(m) {
   const z = DATA.zones[W.zone]; W.monsters = W.monsters.filter(x => x !== m); if (P.target === m) P.target = null;
   let xp = m.def.xp * (m.boss ? 1 : 1 + (m.lvl - m.def.lvl[0]) * 0.12); const ld = S.level - m.lvl; if (ld > 5) xp *= 0.3; else if (ld > 3) xp *= 0.6; xp = Math.floor(xp);
@@ -337,7 +338,7 @@ function killMonster(m) {
   if (m.boss || Math.random() < 0.22) W.loot.push({ x: m.x + rnd(-20, 20), y: m.y + rnd(-6, 10), kind: 'item', item: genItem(m.lvl, null, m.boss ? (Math.random() < 0.35 ? 'epic' : 'rare') : null), t: 0 });
   if (Math.random() < 0.15) W.loot.push({ x: m.x + rnd(-20, 20), y: m.y + rnd(-6, 10), kind: 'cons', id: m.lvl < 10 ? 'hpot_s' : m.lvl < 20 ? 'hpot_m' : 'hpot_l', t: 0 });
   log(`🏆 ${m.def.name} 처치 (+${xp} XP)`, 'good'); gainXp(xp);
-  if (m.boss) { S.bossDead[z.id] = true; shake = 14; log(`👑 <b>${z.name}</b>의 우두머리 ${m.def.name}을(를) 물리쳤습니다! 동쪽 포탈이 열렸습니다.`, 'lvl');
+  if (m.boss) { S.bossDead[z.id] = true; shake = 14; companionEvent('boss_dead', m.def.name); log(`👑 <b>${z.name}</b>의 우두머리 ${m.def.name}을(를) 물리쳤습니다! 동쪽 포탈이 열렸습니다.`, 'lvl');
     if (W.zone === DATA.zones.length - 1) setTimeout(() => openDialog('🏆 승리!', `<p><b>${S.name}</b>, 당신은 불의 군주를 물리치고 세계를 구했습니다!</p><p>총 처치 ${S.stats.killsTotal}, 사망 ${S.stats.deaths}, 레벨 ${S.level}.</p><p class="muted">게임은 계속 즐길 수 있습니다. 만렙 30까지 도전해 보세요!</p>`), 800); }
   saveGame(); renderHUD();
 }
@@ -371,6 +372,7 @@ function update(dt) {
   W.loot = W.loot.filter(l => { l.t += dt; if (dist(l.x, l.y, S.px, S.py) < 30) { pickLoot(l); return false; } return true; });
   // 몬스터
   W.monsters.forEach(m => updateMonster(m, dt));
+  updateCompanion(dt); if (S.hp < st.maxHp * 0.25 && S.hp > 0) companionEvent('low_hp');
   // 투사체
   W.projs = W.projs.filter(p => {
     p.t += dt; p.x += p.vx * dt; p.y += p.vy * dt; if (p.t > p.life || solid(p.x, p.y + 20)) return false;
@@ -390,7 +392,7 @@ function pickLoot(l) {
   if (l.kind === 'gold') { S.gold += l.n; floatText(S.px, S.py - 60, `+${l.n}💰`, '#ffd100', 0.8); }
   else if (l.kind === 'quest') { S.questItems[l.id] = (S.questItems[l.id] || 0) + 1; DATA.zones.forEach(z => z.quests.forEach(q => { const st = S.quests[q.id]; if (st && st.status === 'active' && q.type === 'collect' && q.target === l.id) { st.progress = S.questItems[l.id]; if (st.progress === q.count) log(`📜 <b>${q.name}</b> 목표 달성! ${q.giver}에게 돌아가세요.`, 'sys'); } })); floatText(S.px, S.py - 60, `📦 ${DATA.questItems[l.id].name}`, '#c8b6ff'); }
   else if (l.kind === 'cons') { S.consum[l.id] = (S.consum[l.id] || 0) + 1; floatText(S.px, S.py - 60, `🧪 ${DATA.consumables[l.id].name}`, '#9be89b'); }
-  else if (l.kind === 'item') { if (addItem(l.item)) { log(`🎁 획득: ${itemHtml(l.item)}`, 'lvl'); floatText(S.px, S.py - 60, `🎁 ${l.item.name}`, DATA.rarity[l.item.rarity].color, 1.4); } }
+  else if (l.kind === 'item') { if (addItem(l.item)) { log(`🎁 획득: ${itemHtml(l.item)}`, 'lvl'); if (l.item.rarity === 'epic') companionEvent('epic', l.item.name); floatText(S.px, S.py - 60, `🎁 ${l.item.name}`, DATA.rarity[l.item.rarity].color, 1.4); } }
   renderHUD();
 }
 function updateMonster(m, dt) {
@@ -400,7 +402,7 @@ function updateMonster(m, dt) {
   const d = dist(m.x, m.y, S.px, S.py);
   const atkRange = m.abil && ['bolt', 'volley', 'candle'].includes(m.def.abil) ? 240 : 46 + m.r;
   if (m.state === 'idle') {
-    if (d < m.aggroR && (!m.boss || d < 200)) { m.state = 'chase'; floatText(m.x, m.y - 60, '!', '#ff5555', 0.6); if (m.boss) log(`👑 <b>${m.def.name}</b>이(가) 당신을 노려봅니다!`, 'bad'); }
+    if (d < m.aggroR && (!m.boss || d < 200)) { m.state = 'chase'; floatText(m.x, m.y - 60, '!', '#ff5555', 0.6); if (m.boss) { log(`👑 <b>${m.def.name}</b>이(가) 당신을 노려봅니다!`, 'bad'); companionEvent('boss_aggro', m.def.name); } }
     else { m.wanderT -= dt; if (m.wanderT <= 0) { m.wanderT = 1 + Math.random() * 2; if (m.boss || Math.random() < 0.4) { m.vx = 0; m.vy = 0; } else { const a = Math.random() * Math.PI * 2; m.vx = Math.cos(a) * 50; m.vy = Math.sin(a) * 50; } } moveMonster(m, dt, 1, true); }
   } else if (m.state === 'chase' || m.state === 'attack') {
     if (d > m.aggroR * 2.2 || dist(m.x, m.y, m.hx, m.hy) > (m.boss ? 400 : 900)) { m.state = 'idle'; m.windup = 0; if (m.boss) { m.hp = Math.min(m.maxHp, m.hp + m.maxHp * 0.02); } return; }
@@ -438,7 +440,7 @@ function travel(dir) {
   }
   S.zone = W.zone + dir; buildWorld(S.zone);
   if (dir > 0) { S.px = 2.5 * TILE; S.py = 8.5 * TILE; } else { S.px = (W.portal.x - 1.5) * TILE; S.py = (W.portal.y + 0.5) * TILE; }
-  const nz = DATA.zones[S.zone]; log(`🌀 <b>${nz.name}</b>에 도착했습니다. ${nz.intro}`, 'sys'); camX = S.px; camY = S.py; saveGame(); renderHUD();
+  const nz = DATA.zones[S.zone]; log(`🌀 <b>${nz.name}</b>에 도착했습니다. ${nz.intro}`, 'sys'); camX = S.px; camY = S.py; CO.x = S.px - 40; CO.y = S.py; companionEvent('zone', nz.name); saveGame(); renderHUD();
 }
 
 // ===== 렌더링 =====
@@ -468,6 +470,7 @@ function draw() {
   W.loot.forEach(l => ents.push({ y: l.y, f: () => drawLoot(ctx, l) }));
   W.npcs.forEach(n => ents.push({ y: n.y, f: () => { ctx.font = '46px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(n.x, n.y + 2, 18, 6, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillText(n.emoji, n.x, n.y - 24); drawLabel(ctx, n.x, n.y + 14, n.name, '#ffe9a8', 'bold 11px sans-serif'); if (n.kind === 'quest') { const st = questMarker(); if (st) { ctx.font = 'bold 28px sans-serif'; ctx.fillStyle = '#000'; ctx.fillText(st, n.x + 1, n.y - 57); ctx.fillStyle = '#ffd100'; ctx.fillText(st, n.x, n.y - 58); } } if (dist(n.x, n.y, S.px, S.py) < 80) drawLabel(ctx, n.x, n.y - 78, '[E] 대화', '#fff', 'bold 11px sans-serif'); } }));
   W.monsters.forEach(m => ents.push({ y: m.y, f: () => drawMonster(ctx, m) }));
+  ents.push({ y: CO.y, f: () => drawCompanion(ctx) });
   ents.push({ y: S.py, f: () => {
     if (P.flash > 0) { ctx.fillStyle = 'rgba(255,0,0,0.25)'; ctx.beginPath(); ctx.arc(S.px, S.py - 28, 34, 0, Math.PI * 2); ctx.fill(); }
     if (P.shield > 0) { ctx.strokeStyle = 'rgba(127,211,255,0.8)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(S.px, S.py - 28, 34, 0, Math.PI * 2); ctx.stroke(); }
@@ -479,6 +482,7 @@ function draw() {
   ents.sort((a, b) => a.y - b.y).forEach(e => e.f());
   // 이펙트
   W.fx.forEach(f => { const a = 1 - f.t / f.life; if (f.slash) { ctx.strokeStyle = f.color; ctx.globalAlpha = a; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(f.x - f.dir * 20, f.y, 34, f.dir > 0 ? -1.1 : Math.PI - 1.1, f.dir > 0 ? 1.1 : Math.PI + 1.1); ctx.stroke(); ctx.globalAlpha = 1; } else { ctx.globalAlpha = a; ctx.fillStyle = f.color; ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; } });
+  drawCompanionHint(ctx);
   W.texts.forEach(t => { const a = 1 - Math.pow(t.t / t.life, 2); ctx.globalAlpha = a; ctx.font = `bold ${t.text.length > 8 ? 13 : 17}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.strokeText(t.text, t.x, t.y); ctx.fillStyle = t.color; ctx.fillText(t.text, t.x, t.y); ctx.globalAlpha = 1; });
   ctx.restore();
   drawMinimap(ctx, cv, th, z); drawTargetFrame(ctx);
@@ -544,7 +548,7 @@ function startGame(state) {
   $('#screen-create').classList.remove('open'); $('#screen-game').classList.add('open');
   const z = DATA.zones[S.zone]; log(`<b>${z.name}</b>에 오신 것을 환영합니다, ${S.name}. ${z.intro}`, 'sys');
   log('WASD/방향키로 이동, Space로 공격, 1~6 기술, Q 물약, E로 NPC 대화. 📜 퀘스트 NPC부터 만나보세요!', 'muted');
-  setTab('char'); renderHUD(); lastT = performance.now(); requestAnimationFrame(loop);
+  companionInit(); setTab('char'); renderHUD(); lastT = performance.now(); requestAnimationFrame(loop);
   setInterval(() => { if (S) S.stats.playtime++; }, 1000); setInterval(() => { if (S && !dead) saveGame(); }, 30000);
 }
 let selRace = 'human', selCls = 'warrior';
@@ -568,9 +572,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === ' ') { e.preventDefault(); doAttack(); return; }
     const n = parseInt(e.key); if (n >= 1 && n <= 6) { useAbility(DATA.classes[S.cls].abilities[n - 1]); return; }
     if (e.key === 'q' || e.key === 'Q') { quickPotion(); return; } if (e.key === 'e' || e.key === 'E' || e.key === 'Enter') { interactNearby(); return; }
-    if (e.key === 'i' || e.key === 'I') setTab('bag'); if (e.key === 'l' || e.key === 'L') setTab('quest'); if (e.key === 'n' || e.key === 'N') setTab('talent'); if (e.key === 'c' || e.key === 'C') setTab('char'); if (e.key === 'k' || e.key === 'K') setTab('skill');
+    if (e.key === 'i' || e.key === 'I') setTab('bag'); if (e.key === 'l' || e.key === 'L') setTab('quest'); if (e.key === 'n' || e.key === 'N') setTab('talent'); if (e.key === 'c' || e.key === 'C') setTab('char'); if (e.key === 'k' || e.key === 'K') setTab('skill'); if (e.key === 't' || e.key === 'T') { setTab('companion'); e.preventDefault(); return; }
     if (e.key.startsWith('Arrow')) e.preventDefault(); keys[e.key] = true;
   });
   document.addEventListener('keyup', e => { keys[e.key] = false; });
+  $('#co-send').onclick = () => { const v = $('#co-input').value; $('#co-input').value = ''; companionChat(v); };
+  $('#co-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('#co-send').click(); } if (e.key === 'Escape') { $('#co-input').blur(); setTab('char'); } e.stopPropagation(); });
+  $('#co-stop').onclick = () => { if (CO.ctl) CO.ctl.abort(); };
   window.addEventListener('blur', () => { keys = {}; });
 });

@@ -40,15 +40,21 @@
         <button class="tab-btn" data-tab="quest">퀘스트</button>
         <button class="tab-btn" data-tab="skill">기술</button>
         <button class="tab-btn" data-tab="talent" id="tab-btn-talent">특성</button>
+        <button class="tab-btn" data-tab="companion">💬 동료</button>
       </div>
       <div id="panel"></div>
+      <div id="companion-panel" style="display:none">
+        <div id="co-head"></div>
+        <div id="co-msgs"></div>
+        <div class="co-row"><input id="co-input" maxlength="300" placeholder="렌에게 말 걸기 (T키)"><button id="co-send">보내기</button><button id="co-stop" style="display:none">중단</button></div>
+      </div>
     </div>
   </div>
   <div id="actionbar"></div>
   <div class="bottom">
     <div>
       <div id="log"></div>
-      <div class="help">⌨️ 이동: WASD/방향키 · 공격: Space · 기술: 1~6 · 물약: Q · NPC 대화: E · 탭: C 캐릭터, I 가방, L 퀘스트, K 기술, N 특성</div>
+      <div class="help">⌨️ 이동: WASD/방향키 · 공격: Space · 기술: 1~6 · 물약: Q · NPC 대화: E · 동료 대화: T · 탭: C 캐릭터, I 가방, L 퀘스트, K 기술, N 특성</div>
     </div>
     <div class="mobile">
       <div class="dpad">
@@ -66,6 +72,7 @@
 
 <script src="js/data.js"></script>
 <script src="js/sprite.js"></script>
+<script src="js/companion.js"></script>
 <script src="js/game.js"></script>
 </body>
 </html>
