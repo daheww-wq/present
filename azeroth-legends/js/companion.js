@@ -116,7 +116,7 @@ function renderCompanionPanel(keep) {
   $('#co-auto').onchange = e => { CO.autoLLM = e.target.checked; };
   const cv = $('#co-preview'); const ctx = cv.getContext('2d'); drawHero(ctx, 28, 62, { ...CO_LOOK, scale: 0.75, facing: 1 });
   $('#co-send').disabled = CO.busy; $('#co-stop').style.display = CO.busy ? '' : 'none';
-  if (!keep && !$('#co-msgs').children.length) addChatMsg('co', CO.sample ? '안녕, 대장! 뭐든 물어봐. 힐도 해주고 길도 알려줄게.' : '안녕! 지금은 대본으로만 대답할 수 있어. 힐, 퀘스트, 보스, 길 같은 걸 물어봐.');
+  if (!keep && CO.sampleReady && !$('#co-msgs').children.length) addChatMsg('co', CO.sample ? '안녕, 대장! 뭐든 물어봐. 힐도 해주고 길도 알려줄게.' : '안녕! 지금은 대본으로만 대답할 수 있어. 힐, 퀘스트, 보스, 길 같은 걸 물어봐.');
 }
 function drawCompanionHint(ctx) {
   if (!CO.hint) return; CO.hint.t -= 1 / 60; if (CO.hint.t <= 0) { CO.hint = null; return; }
