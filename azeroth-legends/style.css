@@ -17,7 +17,7 @@ input { background: var(--panel2); border: 1px solid var(--border); color: var(-
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin: 10px 0 20px; }
 .card { background: var(--panel); border: 2px solid var(--border); border-radius: 10px; padding: 12px 8px; cursor: pointer; transition: transform .1s; }
 .card:hover { transform: translateY(-2px); border-color: #6a5a90; } .card.sel { border-color: var(--gold); background: var(--panel2); box-shadow: 0 0 14px rgba(255, 209, 0, .25); }
-.card .big { font-size: 36px; }
+.card .big { font-size: 56px; line-height: 1.2; }
 .create-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
 
 /* 게임 화면 */
@@ -52,7 +52,7 @@ input { background: var(--panel2); border: 1px solid var(--border); color: var(-
 /* 전투 */
 #combat .box { max-width: 860px; }
 .c-side { display: flex; gap: 12px; align-items: center; padding: 8px; background: var(--panel2); border-radius: 8px; margin-bottom: 6px; }
-.c-emoji { font-size: 48px; width: 64px; text-align: center; }
+.c-emoji { font-size: 96px; width: 120px; text-align: center; line-height: 1; filter: drop-shadow(0 6px 8px rgba(0,0,0,.6)); }
 .effects { margin-top: 4px; } .eff { display: inline-block; background: #0a0810; border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 11px; margin-right: 4px; }
 .vs { text-align: center; color: var(--gold); font-weight: 700; margin: 4px 0; font-family: Georgia, serif; }
 #c-actions { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; margin: 10px 0; }

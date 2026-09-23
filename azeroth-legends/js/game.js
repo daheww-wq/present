@@ -1,7 +1,7 @@
 // ===== 아제로스 레전드: 게임 엔진 =====
 'use strict';
 
-const TILE = 32, MAP_W = 24, MAP_H = 16;
+const TILE = 64, MAP_W = 24, MAP_H = 16;
 const T = { GRASS: 0, TREE: 1, WATER: 2, ROAD: 3, TOWN: 4, PORTAL: 5, BACK: 6, LAIR: 7 };
 const SAVE_KEY = 'azeroth_legends_save_v1';
 
@@ -155,37 +155,85 @@ function npcAt(x, y) { return W.npcs.find(n => n.x === x && n.y === y); }
 
 // ===== 렌더링 =====
 const canvas = () => $('#canvas');
+function drawFigure(ctx, cx, cy, emoji, size) {
+  ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(cx, cy + size * 0.42, size * 0.42, size * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.font = `${size}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff';
+  ctx.fillText(emoji, cx, cy);
+}
+function drawLabel(ctx, cx, cy, text, color, font) {
+  ctx.font = font || 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const w = ctx.measureText(text).width + 10;
+  ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.beginPath(); ctx.roundRect(cx - w / 2, cy - 9, w, 18, 6); ctx.fill();
+  ctx.fillStyle = color; ctx.fillText(text, cx, cy);
+}
 function draw() {
   const cv = canvas(), ctx = cv.getContext('2d');
-  const z = DATA.zones[W.zone], th = z.theme;
+  const z = DATA.zones[W.zone], th = z.theme, cls = DATA.classes[S.cls];
+  const camX = clamp(S.pos.x * TILE + TILE / 2 - cv.width / 2, 0, MAP_W * TILE - cv.width);
+  const camY = clamp(S.pos.y * TILE + TILE / 2 - cv.height / 2, 0, MAP_H * TILE - cv.height);
   ctx.clearRect(0, 0, cv.width, cv.height);
-  for (let y = 0; y < MAP_H; y++) for (let x = 0; x < MAP_W; x++) {
+  ctx.save(); ctx.translate(-camX, -camY);
+  const x0 = Math.floor(camX / TILE), y0 = Math.floor(camY / TILE), x1 = Math.min(MAP_W - 1, Math.ceil((camX + cv.width) / TILE)), y1 = Math.min(MAP_H - 1, Math.ceil((camY + cv.height) / TILE));
+  // 바닥
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
     const t = W.grid[y][x]; let col = th.grass;
     if (t === T.TREE) col = th.dark; else if (t === T.WATER) col = th.water; else if (t === T.ROAD) col = th.road; else if (t === T.TOWN) col = '#8b6b4a';
     else if (t === T.PORTAL || t === T.BACK) col = '#5b3fa6'; else if (t === T.LAIR) col = '#6b1d1d';
     ctx.fillStyle = col; ctx.fillRect(x * TILE, y * TILE, TILE, TILE);
-    ctx.font = '22px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    const cx = x * TILE + TILE / 2, cy = y * TILE + TILE / 2 + 2;
-    if (t === T.TREE) { ctx.fillStyle = th.tree; ctx.beginPath(); ctx.arc(cx, cy - 4, 11, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#5a3a1a'; ctx.fillRect(cx - 2, cy + 4, 4, 8); }
-    else if (t === T.WATER) { ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.fillRect(x * TILE + 6, y * TILE + 12, 12, 2); ctx.fillRect(x * TILE + 16, y * TILE + 22, 10, 2); }
-    else if (t === T.TOWN) { ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fillRect(x * TILE, y * TILE, TILE, 1); ctx.fillRect(x * TILE, y * TILE, 1, TILE); }
-    else if (t === T.PORTAL) { ctx.fillText(S.bossDead[z.id] || W.zone === DATA.zones.length - 1 ? '🌀' : '🔒', cx, cy); }
-    else if (t === T.BACK) { ctx.fillText(W.zone > 0 ? '🌀' : '🏠', cx, cy); }
-    else if (t === T.LAIR) { ctx.fillText(S.bossDead[z.id] ? '💀' : z.boss.emoji, cx, cy); }
+    const px = x * TILE, py = y * TILE, cx = px + TILE / 2, cy = py + TILE / 2;
+    if (t === T.GRASS && (x * 7 + y * 13) % 5 === 0) { ctx.fillStyle = 'rgba(0,0,0,0.08)'; ctx.fillRect(px + 12, py + 40, 6, 3); ctx.fillRect(px + 40, py + 18, 6, 3); }
+    else if (t === T.WATER) { ctx.fillStyle = 'rgba(255,255,255,0.28)'; ctx.fillRect(px + 10, py + 20, 22, 3); ctx.fillRect(px + 30, py + 42, 20, 3); }
+    else if (t === T.TOWN) { ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.strokeRect(px + 0.5, py + 0.5, TILE, TILE); ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.fillRect(px + 4, py + 4, TILE - 8, TILE - 8); }
+    else if (t === T.ROAD) { ctx.fillStyle = 'rgba(0,0,0,0.07)'; ctx.fillRect(px + 8, py + 30, 10, 4); ctx.fillRect(px + 38, py + 14, 12, 4); }
   }
-  ctx.font = '22px serif';
+  // 오브젝트 (나무, 포탈, 은신처)
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+    const t = W.grid[y][x], cx = x * TILE + TILE / 2, cy = y * TILE + TILE / 2;
+    if (t === T.TREE) {
+      ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(cx, cy + 22, 20, 7, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#5a3a1a'; ctx.fillRect(cx - 4, cy + 6, 8, 18);
+      ctx.fillStyle = th.tree; ctx.beginPath(); ctx.arc(cx, cy - 6, 22, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.arc(cx - 7, cy - 13, 9, 0, Math.PI * 2); ctx.fill();
+    }
+    else if (t === T.PORTAL) { ctx.font = '44px serif'; ctx.fillText(S.bossDead[z.id] || W.zone === DATA.zones.length - 1 ? '🌀' : '🔒', cx, cy); drawLabel(ctx, cx, cy + 30, W.zone < DATA.zones.length - 1 ? DATA.zones[W.zone + 1].name : '세계의 끝', '#e0c8ff'); }
+    else if (t === T.BACK) { ctx.font = '44px serif'; ctx.fillText(W.zone > 0 ? '🌀' : '🏠', cx, cy); if (W.zone > 0) drawLabel(ctx, cx, cy + 30, DATA.zones[W.zone - 1].name, '#e0c8ff'); }
+    else if (t === T.LAIR) { if (S.bossDead[z.id]) { ctx.font = '44px serif'; ctx.fillText('💀', cx, cy); } else { drawFigure(ctx, cx, cy, z.boss.emoji, 54); drawLabel(ctx, cx, cy - 36, `👑 ${z.boss.name} Lv${z.boss.lvl}`, '#ff8080'); } }
+  }
+  // NPC
   W.npcs.forEach(n => {
-    ctx.fillText(n.emoji, n.x * TILE + TILE / 2, n.y * TILE + TILE / 2 + 2);
-    if (n.kind === 'quest') { const st = questMarker(); if (st) { ctx.font = 'bold 16px sans-serif'; ctx.fillStyle = st === '?' ? '#ffd100' : '#ffd100'; ctx.fillText(st, n.x * TILE + TILE - 6, n.y * TILE + 8); ctx.font = '22px serif'; } }
+    const cx = n.x * TILE + TILE / 2, cy = n.y * TILE + TILE / 2;
+    drawFigure(ctx, cx, cy, n.emoji, 46);
+    drawLabel(ctx, cx, cy + 32, n.name, '#ffe9a8', 'bold 11px sans-serif');
+    if (n.kind === 'quest') { const st = questMarker(); if (st) { ctx.font = 'bold 26px sans-serif'; ctx.fillStyle = '#000'; ctx.fillText(st, cx + 1, cy - 33); ctx.fillStyle = '#ffd100'; ctx.fillText(st, cx, cy - 34); } }
   });
+  // 몬스터
   W.monsters.forEach(m => {
-    ctx.fillText(m.def.emoji, m.x * TILE + TILE / 2, m.y * TILE + TILE / 2 + 2);
-    ctx.font = '10px sans-serif'; ctx.fillStyle = m.lvl > S.level + 2 ? '#ff5555' : m.lvl < S.level - 3 ? '#aaa' : '#ffd100';
-    ctx.fillText(m.lvl, m.x * TILE + TILE - 6, m.y * TILE + 7); ctx.font = '22px serif';
+    const cx = m.x * TILE + TILE / 2, cy = m.y * TILE + TILE / 2;
+    drawFigure(ctx, cx, cy, m.def.emoji, 46);
+    const col = m.lvl > S.level + 2 ? '#ff6060' : m.lvl < S.level - 3 ? '#bbb' : '#ffd100';
+    drawLabel(ctx, cx, cy - 32, `Lv${m.lvl} ${m.def.name}`, col, 'bold 11px sans-serif');
   });
+  // 플레이어
   const px = S.pos.x * TILE + TILE / 2, py = S.pos.y * TILE + TILE / 2;
-  ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.beginPath(); ctx.arc(px, py + 2, 14, 0, Math.PI * 2); ctx.fill();
-  ctx.fillText(DATA.races[S.race].emoji, px, py + 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.beginPath(); ctx.arc(px, py + 4, 28, 0, Math.PI * 2); ctx.fill();
+  drawFigure(ctx, px, py, DATA.races[S.race].emoji, 50);
+  ctx.font = '22px serif'; ctx.fillText(cls.emoji, px + 20, py + 10);
+  drawLabel(ctx, px, py - 36, `${S.name} Lv${S.level}`, cls.color, 'bold 13px sans-serif');
+  ctx.restore();
+  // 미니맵
+  const mw = 120, mh = 80, mx = cv.width - mw - 8, my = 8, sx = mw / MAP_W, sy = mh / MAP_H;
+  ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(mx - 3, my - 3, mw + 6, mh + 6);
+  for (let y = 0; y < MAP_H; y++) for (let x = 0; x < MAP_W; x++) {
+    const t = W.grid[y][x]; let col = th.grass;
+    if (t === T.TREE) col = th.dark; else if (t === T.WATER) col = th.water; else if (t === T.ROAD) col = th.road; else if (t === T.TOWN) col = '#8b6b4a';
+    else if (t === T.PORTAL || t === T.BACK) col = '#b08cff'; else if (t === T.LAIR) col = '#ff3030';
+    ctx.fillStyle = col; ctx.fillRect(mx + x * sx, my + y * sy, sx, sy);
+  }
+  ctx.fillStyle = '#ff5050'; W.monsters.forEach(m => ctx.fillRect(mx + m.x * sx + 1, my + m.y * sy + 1, sx - 2, sy - 2));
+  ctx.fillStyle = '#ffd100'; W.npcs.forEach(n => ctx.fillRect(mx + n.x * sx + 1, my + n.y * sy + 1, sx - 2, sy - 2));
+  ctx.fillStyle = '#fff'; ctx.fillRect(mx + S.pos.x * sx, my + S.pos.y * sy, sx, sy);
+  ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.strokeRect(mx + camX / TILE * sx, my + camY / TILE * sy, cv.width / TILE * sx, cv.height / TILE * sy);
 }
 function questMarker() {
   const z = DATA.zones[W.zone];
