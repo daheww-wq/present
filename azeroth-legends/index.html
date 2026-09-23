@@ -13,6 +13,7 @@
   <h1>⚔️ 아제로스 레전드</h1>
   <p class="muted">다섯 지역, 다섯 우두머리, 여섯 직업. 당신의 전설을 시작하세요.</p>
   <button id="btn-load" class="primary" style="display:none;margin-bottom:16px"></button>
+  <div class="create-preview"><canvas id="create-preview" width="140" height="170"></canvas><div class="muted small">종족과 직업에 따라 외형이 바뀌고,<br>장비를 입히면 캐릭터에 그대로 나타납니다.</div></div>
   <h4>이름</h4>
   <input id="inp-name" maxlength="12" placeholder="캐릭터 이름을 입력하세요">
   <h4>종족</h4>
@@ -43,15 +44,19 @@
       <div id="panel"></div>
     </div>
   </div>
+  <div id="actionbar"></div>
   <div class="bottom">
     <div>
       <div id="log"></div>
-      <div class="help">⌨️ 이동: 방향키/WASD · 탭: C 캐릭터, I 가방, L 퀘스트, K 기술, N 특성 · 전투: 1~6 기술, Space 기본 공격</div>
+      <div class="help">⌨️ 이동: WASD/방향키 · 공격: Space · 기술: 1~6 · 물약: Q · NPC 대화: E · 탭: C 캐릭터, I 가방, L 퀘스트, K 기술, N 특성</div>
     </div>
-    <div class="dpad">
-      <button class="e"></button><button data-move="0,-1">▲</button><button class="e"></button>
-      <button data-move="-1,0">◀</button><button class="e"></button><button data-move="1,0">▶</button>
-      <button class="e"></button><button data-move="0,1">▼</button><button class="e"></button>
+    <div class="mobile">
+      <div class="dpad">
+        <button class="e"></button><button data-key="ArrowUp">▲</button><button class="e"></button>
+        <button data-key="ArrowLeft">◀</button><button class="e"></button><button data-key="ArrowRight">▶</button>
+        <button class="e"></button><button data-key="ArrowDown">▼</button><button class="e"></button>
+      </div>
+      <button id="btn-attack" class="atkbtn">⚔️</button>
     </div>
   </div>
 </section>
@@ -59,19 +64,8 @@
 <!-- 대화 모달 -->
 <div id="dialog" class="modal"><div class="box"><h3 id="dialog-title"></h3><div id="dialog-body"></div><div id="dialog-buttons"></div></div></div>
 
-<!-- 전투 모달 -->
-<div id="combat" class="modal"><div class="box">
-  <div class="c-side"><div id="c-enemy" style="display:flex;gap:12px;align-items:center;flex:1"></div></div>
-  <div id="c-ehp" class="bar"><div class="fill"></div><div class="txt"></div></div>
-  <div class="vs">⚔️ VS ⚔️</div>
-  <div class="c-side"><div id="c-player" style="display:flex;gap:12px;align-items:center;flex:1"></div></div>
-  <div id="c-php" class="bar" style="margin-bottom:4px"><div class="fill"></div><div class="txt"></div></div>
-  <div id="c-pres" class="bar"><div class="fill"></div><div class="txt"></div></div>
-  <div id="c-actions"></div>
-  <div id="clog"></div>
-</div></div>
-
 <script src="js/data.js"></script>
+<script src="js/sprite.js"></script>
 <script src="js/game.js"></script>
 </body>
 </html>
