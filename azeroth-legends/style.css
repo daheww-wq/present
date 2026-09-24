@@ -83,3 +83,4 @@ input { background: var(--panel2); border: 1px solid var(--border); color: var(-
 .co-row { display: flex; gap: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
 .co-row input { flex: 1; max-width: none; font-size: 14px; padding: 8px; }
 .co-row button { padding: 6px 12px; white-space: nowrap; }
+.stance { display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0; } .stance button.on { border-color: var(--gold); color: var(--gold); }
